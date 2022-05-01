@@ -307,7 +307,9 @@
           "createOption": "empty"
         }
       },
-      "sku": "Premium_LRS"
+      "sku": {
+        "name": "Premium_LRS"
+      }
     },
     {
       "type": "Microsoft.Compute/virtualMachines",
