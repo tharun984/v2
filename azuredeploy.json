@@ -218,7 +218,7 @@
     "virtualNetworkName": "MyVNET",
     "networkSecurityGroupName": "default-NSG",
      "diskname": "[concat(parameters('vmName'), '_DataDisk_0')]",
-     "publicIpAddressId": "[resourceId(parameters('publicIpResourceGroupName'), 'Microsoft.Network/publicIPAddresses', parameters('publicIpName'))]",
+     "publicIpAddressId": "[resourceId(parameters('publicIpResourceGroupName'), 'Microsoft.Network/publicIPAddresses', parameters('publicIpName'))]"
   },
   "resources": [
     {
