@@ -103,7 +103,7 @@
                         "recommendedSizes": [
                             "Standard_D2s_v4"
                         ],
-						"constraints": { "allowedSizes": ["Standard_D2s_v4", "Standard_D4s_v4", "Standard_D8s_v4"] },
+			"constraints": { "allowedSizes": ["Standard_D2s_v4", "Standard_D4s_v4", "Standard_D8s_v4"] },
                         "osPlatform": "Windows",
                         "count": "1"
                     },
