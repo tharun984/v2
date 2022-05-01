@@ -385,17 +385,17 @@
       "autoUpgradeMinorVersion": true,
       "settings": {
         "fileUris": [
-          "https://raw.githubusercontent.com/tharun984/installpackage/main/installpackage.ps1"
+          "https://raw.githubusercontent.com/tharun984/v2/main/installpackage.ps1"
         ],
-        "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File installpackage.ps1 -packagedownloaduri ',parameters('backupGatewayPackage'), ' -vmhostname ',reference(resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpName'))).dnsSettings.fqdn,' -companyauthcode ', parameters('companyAuthCode'), ' -vmname ', parameters('vmName'))]"
+        "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File installpackage.ps1 -packagedownloaduri ',parameters('backupGatewayPackage'),' -companyauthcode ', parameters('companyAuthCode'))]"
       }
     }
 }
   ],
   "outputs": {
-    "hostname": {
+    "privateipaddress": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpName'))).dnsSettings.fqdn]"
+      "value": "[reference(resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))).ipConfigurations[0].properties.privateIPAddress]"
     }
   }
 }
