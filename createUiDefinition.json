@@ -3,22 +3,13 @@
     "handler": "Microsoft.Azure.CreateUIDef",
     "version": "0.1.2-preview",
     "parameters": {
-        "config": {
-            "basics": {
-                "description": "Metallic backup gateway wizard",
-                "location": {
-                    "label": "Region",
-                    "toolTip": "Choose the Azure region that's right for you and your customers. Not every resource is available in every region.",
-                    "visible": true
-                }
-            }
-        },
         "basics": [
             {
                 "name": "vmName",
                 "type": "Microsoft.Common.TextBox",
                 "label": "Virtual Machine name",
                 "toolTip": "The name of the Virtual Machine.",
+                "defaultValue": "gateway",
                 "constraints": {
                     "required": true,
                     "regex": "^[a-z0-9A-Z-]{3,15}$",
@@ -93,7 +84,7 @@
                         "label": "Virtual machine size",
                         "toolTip": "The size of virtual machine to provision.",
                         "recommendedSizes": [
-                            "Standard_D4s_v4"
+                            "Standard_D2s_v4"
                         ],
 			"constraints": { "allowedSizes": ["Standard_D2s_v4", "Standard_D4s_v4", "Standard_D8s_v4"] },
                         "osPlatform": "Windows",
@@ -106,13 +97,38 @@
                         "toolTip": "Storage Account for the Virtual Machine's diagnostics",
                         "defaultValue": {
                             "type": "Standard_LRS",
-                            "name": "[take(concat('bootdiag', take(replace(guid(), '-', ''), 10)), 23)]"
+                            "name": "[take(concat(replace(basics('vmName'), '-', ''), take(replace(guid(), '-', ''), 10)), 23)]"
                         },
                         "constraints": {
                             "allowedTypes": [
                                 "Standard_LRS",
                                 "Standard_GRS"
                             ]
+                        }
+                    },
+                    {
+                        "name": "publicIpAddress",
+                        "type": "Microsoft.Network.PublicIpAddressCombo",
+                        "label": {
+                            "publicIpAddress": "Public IP Address for the VM",
+                            "domainNameLabel": "DNS Prefix for the public IP Address"
+                        },
+                        "toolTip": {
+                            "publicIpAddress": "Public IP Address for the VM",
+                            "domainNameLabel": "DNS Prefix for the public IP Address, must be globally unique"
+                        },
+                        "defaultValue": {
+                            "publicIpAddressName": "[concat(basics('vmName'), '-ip')]",
+                            "domainNameLabel": "[concat(basics('vmName'), '-', take(replace(guid(), '-', ''), 10))]"
+                        },
+                        "options": {
+                            "hideExisting": false,
+                            "hideNone": false
+                        },
+                        "constraints": {
+                            "required": {
+                                "domainNameLabel": true
+                            }
                         }
                     },
                     {
@@ -160,6 +176,17 @@
                 },
                 "elements": [
                     {
+                        "name": "backupGatewayPackage",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "Backup Gateway Package URL",
+                        "toolTip": "Copy the backup gateway package download URL from metallic hub",
+                        "constraints": {
+                            "required": true,
+                            "regex": "(https://)[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.(exe)",
+                            "validationMessage": "Please paste valid backup gateway package URL from metallic hub"
+                        }
+                    },
+                    {
                         "name": "companyauthcode",
                         "type": "Microsoft.Common.TextBox",
                         "label": "Metallic AuthCode",
@@ -194,6 +221,14 @@
             "subnetPrefix": "[steps('VirtualMachineConfig').virtualNetwork.subnets.subnet1.addressPrefix]",
             "virtualNetworkResourceGroupName": "[steps('VirtualMachineConfig').virtualNetwork.resourceGroup]",
 
+            "publicIpNewOrExisting": "[steps('VirtualMachineConfig').publicIpAddress.newOrExistingOrNone]",
+            "publicIpName": "[steps('VirtualMachineConfig').publicIpAddress.name]",
+            "dnsLabelPrefix": "[steps('VirtualMachineConfig').publicIpAddress.domainNameLabel]",
+            "publicIpResourceGroupName": "[steps('VirtualMachineConfig').publicIpAddress.resourceGroup]",
+            "publicIPAllocationMethod": "[steps('VirtualMachineConfig').publicIpAddress.publicIPAllocationMethod]",
+            "publicIpSku": "[steps('VirtualMachineConfig').publicIpAddress.sku]",
+
+            "backupGatewayPackage": "[steps('metallicconfig').backupGatewayPackage]",
             "companyAuthCode": "[steps('metallicconfig').companyauthcode]"
 
         }
