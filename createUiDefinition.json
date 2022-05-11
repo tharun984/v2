@@ -7,7 +7,7 @@
             "basics": {
                 "description": "Metallic backup gateway wizard",
                 "location": {
-                    "visible": false
+                    "visible": true
                 }
             }
         },
