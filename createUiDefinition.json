@@ -21,6 +21,25 @@
                     "validationMessage": "The VM Name must be between 3 and 15 characters long and contain letters, numbers and hyphens only."
                 }
             },
+		{
+                "name": "armApiControl",
+                "type": "Microsoft.Solutions.ArmApiControl",
+                "request": {
+                    "method": "GET",
+                    "path": "[concat(subscription().id, '/locations?api-version=2020-01-01')]"
+                }
+            },
+            {
+                "name": "region",
+                "type": "Microsoft.Common.DropDown",
+                "label": "VM Region",
+                "toolTip": "Choose the region for backup gateway deployment",
+                "constraints": {
+                "allowedValues": "[map(basics('armApiControl').value, (item) => parse(concat('{\"label\":\"', item.regionalDisplayName, '\",\"value\":\"', item.name, '\"}')))]",
+                "required": true
+                },
+                "visible": true
+            },
             {
                 "name": "adminUsername",
                 "type": "Microsoft.Compute.UserNameTextBox",
