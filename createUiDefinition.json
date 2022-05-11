@@ -226,7 +226,7 @@
         ],
         "outputs": {
 
-            "location": "[location()]",
+            "location": "[basics('region')]",
             "vmName": "[basics('vmName')]",
             "adminUsername": "[basics('adminUsername')]",
             "adminPassword": "[basics('adminPassword').password]",
