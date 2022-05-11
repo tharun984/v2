@@ -3,51 +3,80 @@
     "handler": "Microsoft.Azure.CreateUIDef",
     "version": "0.1.2-preview",
     "parameters": {
-        "basics": [
-            {
-                "name": "vmName",
-                "type": "Microsoft.Common.TextBox",
-                "label": "Virtual Machine name",
-                "toolTip": "The name of the Virtual Machine.",
-                "defaultValue": "gateway",
-                "constraints": {
-                    "required": true,
-                    "regex": "^[a-z0-9A-Z-]{3,15}$",
-                    "validationMessage": "The VM Name must be between 3 and 15 characters long and contain letters, numbers and hyphens only."
+      "config": {
+            "basics": {
+                "description": "Metallic backup gateway wizard",
+                "location": {
+                    "label": "Region",
+                    "toolTip": "Choose the Azure region that's right for you and your customers. Not every resource is available in every region.",
+                    "visible": false
                 }
+            }
+        },
+      "basics": [
+        {
+          "name": "vmName",
+          "type": "Microsoft.Common.TextBox",
+          "label": "Virtual Machine name",
+          "toolTip": "The name of the Virtual Machine.",
+          "defaultValue": "gateway",
+          "constraints": {
+              "required": true,
+              "regex": "^[a-z0-9A-Z-]{3,15}$",
+              "validationMessage": "The VM Name must be between 3 and 15 characters long and contain letters, numbers and hyphens only."
+          }
+        },
+        {
+          "name": "armApiControl",
+          "type": "Microsoft.Solutions.ArmApiControl",
+          "request": {
+            "method": "GET",
+            "path": "[concat(subscription().id, '/locations?api-version=2020-01-01')]"
+          }
+        },
+        {
+            "name": "Region",
+            "type": "Microsoft.Common.DropDown",
+            "label": "Region",
+            "toolTip": "Choose the region for backup gateway deployment",
+            "constraints": {
+            "allowedValues": "[map(basics('armApiControl').value, (item) => parse(concat('{\"label\":\"', item.regionalDisplayName, '\",\"value\":\"', item.name, '\"}')))]",
+            "required": true
             },
-            {
-                "name": "adminUsername",
-                "type": "Microsoft.Compute.UserNameTextBox",
-                "label": "Username",
-                "toolTip": "Admin username for the machine",
-                "osPlatform": "Windows",
-                "constraints": {
-                    "required": true
-                }
+            "visible": true
+        },
+        {
+            "name": "adminUsername",
+            "type": "Microsoft.Compute.UserNameTextBox",
+            "label": "Username",
+            "toolTip": "Admin username for the machine",
+            "osPlatform": "Windows",
+            "constraints": {
+                "required": true
+            }
+        },
+        {
+            "name": "adminPassword",
+            "type": "Microsoft.Compute.CredentialsCombo",
+            "label": {
+              "password": "Password",
+              "confirmPassword": "Confirm password"
             },
-            {
-                "name": "adminPassword",
-                "type": "Microsoft.Compute.CredentialsCombo",
-                "label": {
-                  "password": "Password",
-                  "confirmPassword": "Confirm password"
-                },
-                "toolTip": {
-                  "password": ""
-                },
-                "constraints": {
-                  "required": true,
-                  "customPasswordRegex": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{12,}$",
-                  "customValidationMessage": "The password must be alphanumeric, Minimum 12 characters, at least one uppercase letter, one lowercase letter, one number and one special character:."
-                },
-                "options": {
-                  "hideConfirmation": false
-                },
-                "osPlatform": "Windows",
-                "visible": true
-              }
-        ],
+            "toolTip": {
+              "password": ""
+            },
+            "constraints": {
+              "required": true,
+              "customPasswordRegex": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{12,}$",
+              "customValidationMessage": "The password must be alphanumeric, Minimum 12 characters, at least one uppercase letter, one lowercase letter, one number and one special character:."
+            },
+            "options": {
+              "hideConfirmation": false
+            },
+            "osPlatform": "Windows",
+            "visible": true
+          }
+      ],
         "steps": [
             {
                 "name": "VirtualMachineConfig",
@@ -201,8 +230,7 @@
             }
         ],
         "outputs": {
-
-            "location": "[location()]",
+            "location": "[basics('Region')]",
             "vmName": "[basics('vmName')]",
             "adminUsername": "[basics('adminUsername')]",
             "adminPassword": "[basics('adminPassword').password]",
